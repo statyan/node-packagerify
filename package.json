@@ -1,6 +1,6 @@
 {
 	"name": "packagerify",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "Make it possible to use 'Java-style' package import instead of using require",
 	"main": "index.js",
 	"scripts": {
