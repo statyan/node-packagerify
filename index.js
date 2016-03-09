@@ -1,28 +1,29 @@
 var fs = require('fs');
 var path = require('path');
 
-module.exports = function (directoryForGeneratedPackagesFile, packageName, watchDirectories) {
+module.exports = function (options) {
+    var watchSourceDirs = options.watchSourceDirs;
     var packageObject = {};
-    if (typeof watchDirectories != 'object') {
-        watchDirectories = [watchDirectories];
+    if (typeof watchSourceDirs != 'object') {
+        watchSourceDirs = [watchSourceDirs];
     }
 
     // Fulfill paths to directories being watched
-    watchDirectories = watchDirectories.map(function(item) {
-        return path.resolve(directoryForGeneratedPackagesFile, item);
+    watchSourceDirs = watchSourceDirs.map(function(item) {
+        return path.resolve(options.packagesFileDir, item);
     });
 
     // generate root container for packages
-    var packageContainerNode = convertPathToObject(packageObject, packageName);
+    var packageContainerNode = convertPathToObject(packageObject, options.packageName);
 
     //collect all modules
-    var sourcePaths = getSourcePaths(watchDirectories);
+    var sourcePaths = getSourcePaths(watchSourceDirs);
 
     // create function with closures being executed for each module
 
     var processModulePath = function(action, modulePath) {
-        var watchDirectory = watchDirectories.find(function(directory) {
-            return (directory.indexOf(modulePath) == 0);
+        var watchDirectory = watchSourceDirs.find(function(directory) {
+            return (modulePath.indexOf(directory) == 0);
         });
         if (!watchDirectory) {
             throw 'Path is not in watched directory: ' + modulePath;
@@ -39,31 +40,15 @@ module.exports = function (directoryForGeneratedPackagesFile, packageName, watch
 
     // prepare package object to flush into packages.js
     var packagesContent = 'var packages = ' + JSON.stringify(packageObject, null, 4).replace(/"/g, '') + '\n'
-        + 'module.exports = function init() {'
-        + '        for (var propName in packages) {'
-        + '            global[propName] = packages[propName];'
-        + '        break;'
-        + '        }'
-        + '}';
+        + 'for (var propName in packages) {'
+        + '   global[propName] = packages[propName];'
+        + '   break;'
+        + '}'
+        + 'module.exports = packages;';
     packagesContent = packagesContent.replace(/propertyNameForReplace.*?:/g, '');
-    fs.writeFileSync(path.resolve(directoryForGeneratedPackagesFile, 'packages.js'), packagesContent);
-    
+    fs.writeFileSync(path.resolve(options.packagesFileDir, 'packages.js'), packagesContent);
+
     return processModulePath;
-}
-
-
-function locatePackage(object, path, delimiter) {
-    var pathParts = path.split('.');
-    var propertyName = null;
-    for(var pathPartsIndex = 0; pathPartsIndex < pathParts.length; pathPartsIndex++) {
-        propertyName = pathParts[pathPartsIndex];
-        if (object.hasOwnProperty(propertyName)) {
-            object = object[propertyName];
-        } else {
-            return null;
-        }
-    }
-    return object;
 }
 
 function convertPathToObject(packageObject, packageName) {
@@ -76,8 +61,8 @@ function convertPathToObject(packageObject, packageName) {
 
 function getSourcePaths(seekPaths) {
     var modulePaths = [];
-    var dirStack = [''];
     seekPaths.forEach(function (rootPath) {
+        var dirStack = [''];
         do {
             var currentDir = path.resolve(rootPath, dirStack.pop());
             var items = fs.readdirSync(currentDir);
@@ -101,7 +86,7 @@ function getSourcePaths(seekPaths) {
 }
 
 function addModuleToPackageObject(watchedDirectory, packageObject, modulePath) {
-    modulePath = path.relative(watchedDirectory, modulePath);
+    modulePath = path.relative(path.dirname(watchedDirectory), modulePath);
     var packageParts = modulePath.split(path.sep);
     packageParts.reduce(function (previousItem, currentItem, index, array) {
             if (index < array.length - 1) {
