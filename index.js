@@ -38,11 +38,11 @@ module.exports = function (options) {
         processModulePath('add', modulePath);
     });
 
-    savePackageObject(options.packagesFileDir);
+    savePackageObject(packageObject, options.packagesFileDir);
 
     var fileWatcherFunction = function (action, modulePath) {
         processModulePath(action, modulePath);
-        savePackageObject(options.packagesFileDir);
+        savePackageObject(packageObject, options.packagesFileDir);
     }
 
 
@@ -50,7 +50,7 @@ module.exports = function (options) {
 }
 
 
-function savePackageObject(directory) {
+function savePackageObject(packageObject, directory) {
     // prepare package object to flush into packages.js
     var packagesContent = 'var packages = ' + JSON.stringify(packageObject, null, 4).replace(/"/g, '') + '\n'
         + 'for (var propName in packages) {'
@@ -59,7 +59,7 @@ function savePackageObject(directory) {
         + '}'
         + 'module.exports = packages;';
     packagesContent = packagesContent.replace(/propertyNameForReplace.*?:/g, '');
-    fs.writeFileSync(path.resolve(options.packagesFileDir, 'packages.js'), packagesContent);
+    fs.writeFileSync(path.resolve(directory, 'packages.js'), packagesContent);
 }
 
 function convertPathToObject(packageObject, packageName) {
