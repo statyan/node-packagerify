@@ -1,0 +1,20 @@
+{
+	"name": "packagerify",
+	"version": "0.0.1",
+	"description": "Make it possible to use 'Java-style' package import instead of using require",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"nodejs",
+		"package",
+		"naming"
+	],
+	"author": "k.kubusha@gmail.com aka Statyan",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/statyan/node-packagerify.git"
+	}
+}
