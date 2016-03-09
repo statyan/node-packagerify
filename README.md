@@ -8,7 +8,7 @@ var module = your.package.name.somePackage.someSubPackage.module;
 Node-packagerify generates packages.js in your project folder. You have to include it into your main application file.
 Why to generate this file and not to use Proxy and so on? Just because I want my IDE make autocompletion when I type the package name;
 
-[![IDE autocomplete](https://github.com/statyan/node-packagerify/blob/master/ide-autocompletion.png)]
+![IDE autocomplete](https://raw.githubusercontent.com/statyan/node-packagerify/master/ide-autocompletion.png)
 
 ### Example config
 ```
