@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 
 module.exports = function (options) {
+
     var watchSourceDirs = options.watchSourceDirs;
     var packageObject = {};
     if (typeof watchSourceDirs != 'object') {
@@ -9,7 +10,7 @@ module.exports = function (options) {
     }
 
     // Fulfill paths to directories being watched
-    watchSourceDirs = watchSourceDirs.map(function(item) {
+    watchSourceDirs = watchSourceDirs.map(function (item) {
         return path.resolve(options.packagesFileDir, item);
     });
 
@@ -21,8 +22,8 @@ module.exports = function (options) {
 
     // create function with closures being executed for each module
 
-    var processModulePath = function(action, modulePath) {
-        var watchDirectory = watchSourceDirs.find(function(directory) {
+    var processModulePath = function (action, modulePath) {
+        var watchDirectory = watchSourceDirs.find(function (directory) {
             return (modulePath.indexOf(directory) == 0);
         });
         if (!watchDirectory) {
@@ -32,12 +33,24 @@ module.exports = function (options) {
     }
 
 
-
     // set each collected module as package
     sourcePaths.forEach(function (modulePath) {
         processModulePath('add', modulePath);
     });
 
+    savePackageObject(options.packagesFileDir);
+
+    var fileWatcherFunction = function (action, modulePath) {
+        processModulePath(action, modulePath);
+        savePackageObject(options.packagesFileDir);
+    }
+
+
+    return fileWatcherFunction;
+}
+
+
+function savePackageObject(directory) {
     // prepare package object to flush into packages.js
     var packagesContent = 'var packages = ' + JSON.stringify(packageObject, null, 4).replace(/"/g, '') + '\n'
         + 'for (var propName in packages) {'
@@ -47,8 +60,6 @@ module.exports = function (options) {
         + 'module.exports = packages;';
     packagesContent = packagesContent.replace(/propertyNameForReplace.*?:/g, '');
     fs.writeFileSync(path.resolve(options.packagesFileDir, 'packages.js'), packagesContent);
-
-    return processModulePath;
 }
 
 function convertPathToObject(packageObject, packageName) {
