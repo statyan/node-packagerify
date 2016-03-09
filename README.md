@@ -30,10 +30,12 @@ require('./packages');
 
 var project = new net.wjc.orm.shared.models.Project;
 ```
-// For ES6:
-`
-class ProjectExt extends net.wjc.orm.shared.models.Project {...}
-`
+ For ES6:
+```
+class ProjectExt extends net.wjc.orm.shared.models.Project {
+    ...
+}
+```
 
 
 
@@ -46,12 +48,14 @@ var functionForWatchFileEvent = require('packagerify')(options);
 ```
 Where *options* is object :
 ```
-packageName: 'your.package.basename',
+{
+    packageName: 'your.package.basename',
     packagesFileDir: __dirname,
     watchSourceDirs: [
         'your_dir_with_code1',
         'your_dir_with_code2'
     ]
+}
 ```
 - packageName: the base name for you package. You can use reversed domain name of your organization: 'com.google'
 - packagesFileDir: where the file 'packages.js' would be generated
