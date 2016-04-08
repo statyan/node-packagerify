@@ -52,7 +52,7 @@ module.exports = function (options) {
 
 function savePackageObject(packageObject, directory) {
     // prepare package object to flush into packages.js
-    var packagesContent = 'var packages = ' + JSON.stringify(packageObject, null, 4).replace(/"/g, '') + '\n'
+    var packagesContent = '"use strict"\nvar packages = ' + JSON.stringify(packageObject, null, 4).replace(/"/g, '') + '\n'
         + 'for (var propName in packages) {'
         + '   global[propName] = packages[propName];'
         + '   break;'
