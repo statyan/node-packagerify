@@ -1,20 +1,27 @@
 {
-	"name": "packagerify",
-	"version": "0.0.5",
-	"description": "Make it possible to use 'Java-style' package import instead of using require",
-	"main": "index.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+  "name": "packagerify",
+  "version": "0.0.7",
+  "description": "Make it possible to use 'Java-style' package import instead of using require",
+  "homepage": "https://github.com/statyan/node-packagerify",
+  "main": "packagerify.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "package",
+    "naming"
+  ],
+	"author": {
+		"name": "statyan",
+		"email": "k.kubusha@gmail.com"
 	},
-	"keywords": [
-		"nodejs",
-		"package",
-		"naming"
-	],
-	"author": "k.kubusha@gmail.com aka Statyan",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/statyan/node-packagerify.git"
-	}
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/statyan/node-packagerify.git"
+  },
+  "dependencies": {
+    "chokidar": "^1.4.3"
+  }
 }
