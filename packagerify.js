@@ -236,16 +236,16 @@ module.exports.injectPackage = function (packageObject, packageName) {
     } catch (e) {
         console.log(e);
     }
-    if (injectTarget) {
-        return;
-    }
-    try {
-        injectTarget = window;
-    } catch (e) {
-        console.log(e);
-    }
     if (!injectTarget) {
-        return;
+        try {
+            injectTarget = window;
+        } catch (e) {
+            console.log(e);
+        }
+        if (!injectTarget) {
+            console.log('Global namespace is not defined');
+            return;
+        }
     }
     var packageNameParts = packageName.split('.');
     var packageItem = packageObject;
