@@ -33,6 +33,7 @@ grunt.initConfig({
                 packageName: 'com.example.packagename',
                 packagesFileDir: '',
                 watchSourceDirs: ['src'],
+                ignored: [**/assets]
             }
         }
     }
@@ -46,6 +47,7 @@ grunt.registerTask('default', ['packagerify']);
 - packageName - dot-separated string (usually your domain in reversed order + package name). For example: com.google.myPackage;
 - packagesFileDir - [not required] path to folder where packages.js file will be created (By default - the Gruntfile.js folder);
 - watchSourceDirs - string or array of strings. Each string is a relative path to packagesFileDir. Each watched directory will populate its sources to packages.js
+- ignored - anymatch-compatible expression matching files or paths
 
 Assuming we have project structure:
 ```
@@ -95,5 +97,11 @@ var packagerify = new Packagerify({
 });
 ```
 
+##Whats new
 
+v0.0.9:
+- add "ignored" option
+
+v0.0.8:
+- add grunt task "packagerify"
 

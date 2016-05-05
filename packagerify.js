@@ -54,7 +54,10 @@ function Packagerify(options) {
      */
     this.isReady = false;
     console.log('Initialize file watcher');
-    var watcher = chokidar.watch(this.watchSourceDirs);
+    var watcher = chokidar.watch(this.watchSourceDirs, {
+        persistent: true,
+        ignored: options.ignored,
+    });
     watcher.on('all', function (event, modulePath) {
         switch (event) {
             case 'add':
