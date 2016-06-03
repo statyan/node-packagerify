@@ -99,6 +99,9 @@ var packagerify = new Packagerify({
 
 ##Whats new
 
+v0.0.10:
+- remove packagerify module dependence from packages.js to avoid packing entire packagerify module with webpack and similar
+
 v0.0.9:
 - add "ignored" option
 

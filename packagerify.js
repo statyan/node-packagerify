@@ -43,15 +43,8 @@ function Packagerify(options) {
 
     console.log('Starting Packagerify');
     console.log('Process files in watched directories');
-    //var sourcePaths = getSourcePaths(this.watchSourceDirs);
 
     var that = this;
-    /*
-     sourcePaths.forEach(function (modulePath) {
-     that.processModulePath('add', modulePath);
-     });
-     this.serialize();
-     */
     this.isReady = false;
     console.log('Initialize file watcher');
     var watcher = chokidar.watch(this.watchSourceDirs, {
@@ -124,7 +117,7 @@ Packagerify.prototype.addModuleToPackageObject = function (watchedDirectory, mod
                 }
                 // generate property name which will be replaced after JSON.stringify
                 previousItem['propertyNameForReplace' + currentItem] = 'get ' + currentItem + '() {'
-                    + 'return require(\'./' + requirePath +'\')'
+                    + 'return require(\'./' + requirePath + '\')'
                     + '}';
                 console.log('Adding module: ' + modulePath);
             }
@@ -161,78 +154,7 @@ Packagerify.prototype.removeModuleFromPackageObject = function (watchedDirectory
     }
 }
 
-Packagerify.prototype.serialize = function () {
-    if (!this.isReady) {
-        return;
-    }
-    var packagesContent = '"use strict"\n'
-        + 'var packages = ' + JSON.stringify(this.packageObjectRoot, null, 4).replace(/"/g, '') + '\n\n\n'
-        + "require('packagerify').injectPackage(packages, '" + this.packageName + "');\n"
-        + 'module.exports = packages;';
-    packagesContent = packagesContent.replace(/propertyNameForReplace.*?: /g, '');
-    fs.writeFileSync(path.resolve(this.generatedPackagesFileDir, 'packages.js'), packagesContent);
-}
-
-
-Packagerify.prototype.fileWatcherFunction = function (action, modulePath) {
-    this.processModulePath(action, modulePath);
-    this.serialize();
-}
-
-
-/*********
- UTILS
- **********/
-
-function buildPackageObject(packageObjectRoot, packageName) {
-    var packageParts = packageName.split('.');
-    return packageParts.reduce(function (previousValue, currentValue, index, array) {
-        previousValue[currentValue] = {};
-        return previousValue[currentValue];
-    }, packageObjectRoot);
-}
-
-function getSourcePaths(seekPaths) {
-    var modulePaths = [];
-    seekPaths.forEach(function (rootPath) {
-        var dirStack = [''];
-        do {
-            var currentDir = path.resolve(rootPath, dirStack.pop());
-            var items = fs.readdirSync(currentDir);
-            items.forEach(function (item) {
-                item = path.resolve(currentDir, item);
-                var stat = fs.statSync(item);
-                if (stat.isDirectory()) {
-                    if (path.basename(item) == 'node_modules') {
-                        return;
-                    }
-                    dirStack.push(item);
-                } else {
-                    if (path.extname(item) == '.js') {
-                        modulePaths.push(item);
-                    }
-                }
-            })
-        } while (dirStack.length > 0);
-    });
-    return modulePaths;
-}
-
-
-function objectHasOtherProperties(obj, currentPropertyName) {
-    for (var propertyName in obj) {
-        if (propertyName == currentPropertyName) {
-            continue;
-        }
-        if (propertyName in Object) {
-            continue;
-        }
-        return true;
-    }
-    return false;
-}
-
-module.exports.injectPackage = function (packageObject, packageName) {
+var injectPackageFunc = function injectPackage(packageObject, packageName) {
     var injectTarget = null;
     try {
         injectTarget = global;
@@ -262,4 +184,37 @@ module.exports.injectPackage = function (packageObject, packageName) {
         packageItem = packageItem[part];
     }
     throw new Error('Package ' + packageName + ' already loaded to global namespace. Check your packages and it names.');
+}
+
+
+Packagerify.prototype.serialize = function () {
+    if (!this.isReady) {
+        return;
+    }
+    var packagesContent = '"use strict"\n'
+        + 'var packages = ' + JSON.stringify(this.packageObjectRoot, null, 4).replace(/"/g, '') + '\n\n\n'
+        + "injectPackage(packages, '" + this.packageName + "');\n"
+        + 'module.exports = packages;';
+    packagesContent = packagesContent.replace(/propertyNameForReplace.*?: /g, '');
+    packagesContent += '\n\n\n' + injectPackageFunc.toString();
+    fs.writeFileSync(path.resolve(this.generatedPackagesFileDir, 'packages.js'), packagesContent);
+}
+
+
+Packagerify.prototype.fileWatcherFunction = function (action, modulePath) {
+    this.processModulePath(action, modulePath);
+    this.serialize();
+}
+
+
+/*********
+ UTILS
+ **********/
+
+function buildPackageObject(packageObjectRoot, packageName) {
+    var packageParts = packageName.split('.');
+    return packageParts.reduce(function (previousValue, currentValue, index, array) {
+        previousValue[currentValue] = {};
+        return previousValue[currentValue];
+    }, packageObjectRoot);
 }
