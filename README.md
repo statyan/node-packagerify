@@ -20,6 +20,8 @@ for(var i in com.your.pack.module) {
 ```
 (Especially useful for AngularJS when registering controllers,directives, etc);
 Note: for client-side usage RequireJS system is a must for now.
+###Please, note:
+If you build your code with BabelJS v6, you **must** use `babel-plugin-add-module-exports` plugin. You can download it here https://www.npmjs.com/package/babel-plugin-add-module-exports
 
 From 0.0.7 version the grunt task included. So, to packagerify your project simply add to Gruntfile.js packagerify config:
 

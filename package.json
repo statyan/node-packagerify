@@ -1,6 +1,6 @@
 {
   "name": "packagerify",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Make it possible to use 'Java-style' package import instead of using require",
   "homepage": "https://github.com/statyan/node-packagerify",
   "main": "packagerify.js",
